@@ -1,5 +1,11 @@
-from flask import Flask, request, render_template
+import os
 import json
+from flask import Flask, request, render_template
+
+# 크롤러 실행 (JSON 없을 때만 실행)
+if not os.path.exists("xehostel_posts.json"):
+    import crawler
+    crawler.crawl()
 
 app = Flask(__name__)
 
