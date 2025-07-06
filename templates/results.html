@@ -1,0 +1,15 @@
+<!doctype html>
+<html>
+  <head><title>{{ query }} - 검색 결과</title></head>
+  <body>
+    <h1>"{{ query }}" 검색 결과</h1>
+    <ul>
+      {% for p in results %}
+        <li><a href="{{ p.url }}" target="_blank">{{ p.title }}</a> - {{ p.date }}</li>
+      {% else %}
+        <li>검색 결과가 없습니다.</li>
+      {% endfor %}
+    </ul>
+    <a href="/">← 다시 검색</a>
+  </body>
+</html>
