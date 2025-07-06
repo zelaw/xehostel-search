@@ -1,17 +1,11 @@
-from flask import Flask, render_template, request
+from flask import Flask, request, render_template
 import json
 
 app = Flask(__name__)
-DATA_FILE = "xehostel_posts.json"
 
-def search_posts(query):
-    query = query.lower()
-    try:
-        with open(DATA_FILE, encoding="utf-8") as f:
-            posts = json.load(f)
-    except FileNotFoundError:
-        return []
-    return [p for p in posts if query in p["title"].lower() or query in p["content"].lower()]
+def load_posts():
+    with open("xehostel_posts.json", encoding="utf-8") as f:
+        return json.load(f)
 
 @app.route("/")
 def index():
@@ -19,9 +13,15 @@ def index():
 
 @app.route("/search")
 def search():
-    q = request.args.get("q", "")
-    results = search_posts(q)
-    return render_template("results.html", query=q, results=results)
+    query = request.args.get("q", "").strip()
+    posts = load_posts()
+
+    if not query:
+        results = []
+    else:
+        results = [post for post in posts if query in post["title"] or query in post["summary"]]
+
+    return render_template("search.html", query=query, results=results)
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=10000)
