@@ -1,33 +1,20 @@
-import os
-import json
 from flask import Flask, request, render_template
-
-# 크롤러 실행 (JSON 없을 때만 실행)
-if not os.path.exists("xehostel_posts.json"):
-    import crawler
-    crawler.crawl()
+import json, os
 
 app = Flask(__name__)
 
-def load_posts():
+def get_posts():
+    if not os.path.exists("xehostel_posts.json"):
+        return []
     with open("xehostel_posts.json", encoding="utf-8") as f:
         return json.load(f)
 
 @app.route("/")
 def index():
-    return render_template("index.html")
-
-@app.route("/search")
-def search():
-    query = request.args.get("q", "").strip()
-    posts = load_posts()
-
-    if not query:
-        results = []
+    q = request.args.get("q", "").lower()
+    posts = get_posts()
+    if q:
+        results = [p for p in posts if q in p["title"].lower() or q in p["summary"].lower()]
     else:
-        results = [post for post in posts if query in post["title"] or query in post["summary"]]
-
-    return render_template("search.html", query=query, results=results)
-
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=10000)
+        results = []
+    return render_template("index.html", results=results, query=q)
