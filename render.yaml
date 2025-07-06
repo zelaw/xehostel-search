@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: xehostel-search
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT
+
+  - type: cron
+    name: crawler-job
+    env: python
+    schedule: "@daily"
+    buildCommand: pip install -r requirements.txt
+    startCommand: python crawler.py
